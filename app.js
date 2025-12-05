@@ -127,20 +127,39 @@ function getText(qid, aid) {
     return a ? a.text : aid;
 }
 
-function renderResults(res) {
-    let html = `<h2>Score: ${res.score}/${res.total}</h2>`;
+function renderResults(result) {
+    const box = document.getElementById("resultContainer");
 
-    res.results.forEach(r => {
+    // Map id -> text
+    const findAnswerText = (qId, aId) => {
+        const q = CURRENT_QUESTIONS.find(x => x.id === qId);
+        if (!q) return aId;
+        const ans = q.answers?.find(a => a.id === aId);
+        return ans ? ans.text : aId;
+    };
+
+    let html = `<h2>Results</h2>`;
+    html += `<p>Score: ${result.score} / ${result.total}</p>`;
+    html += `<ul>`;
+
+    result.results.forEach(res => {
+        const userText = res.userAnswers.map(a => findAnswerText(res.questionId, a)).join(", ");
+        const correctText = res.correctAnswers.map(a => findAnswerText(res.questionId, a)).join(", ");
+
         html += `
-        <div class="${r.correct ? "result-correct" : "result-wrong"}">
-            <b>${r.correct ? "✔ Correct" : "✘ Wrong"}</b><br>
-            Your answer: ${r.userAnswers.map(a => getText(r.questionId, a)).join(", ")}<br>
-            Correct: ${r.correctAnswers.join(", ")}
-        </div><hr>`;
+            <li style="margin-bottom: 10px;">
+                <strong>Question ID:</strong> ${res.questionId}<br>
+                <strong>Your answer:</strong> ${userText}<br>
+                <strong>Correct answer:</strong> ${correctText}<br>
+                <strong>Correct:</strong> ${res.correct ? "YES" : "NO"}
+            </li>
+        `;
     });
 
-    resultContainer.innerHTML = html;
+    html += `</ul>`;
+    box.innerHTML = html;
 }
+
 
 // =======================
 // EXPORT PDF (QUESTIONS)
