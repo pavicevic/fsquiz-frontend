@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://fsquiz-backend.onrender.com";
 
 let CURRENT_QUESTIONS = [];
 let CURRENT_QUIZ_ID = null;
